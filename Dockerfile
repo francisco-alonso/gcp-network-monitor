@@ -12,7 +12,7 @@ RUN go mod tidy
 COPY . .
 
 # Build the Go binary for Linux architecture (cross-compile for Linux)
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o go-template ./cmd
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o gcp-network-monitor ./cmd
 
 # Use a minimal base image for the final container (Alpine)
 FROM debian:bullseye-slim
@@ -21,13 +21,13 @@ FROM debian:bullseye-slim
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Copy the built binary from the builder stage to the target image
-COPY --from=builder /app/go-template /usr/local/bin/go-template
+COPY --from=builder /app/gcp-network-monitor /usr/local/bin/gcp-network-monitor
 
 # Ensure the binary has execute permissions
-RUN chmod +x /usr/local/bin/go-template
+RUN chmod +x /usr/local/bin/gcp-network-monitor
 
 # Expose the application port (assuming your Go service runs on port 8080)
 EXPOSE 8080
 
 # Command to run the binary
-CMD ["/usr/local/bin/go-template"]
+CMD ["/usr/local/bin/gcp-network-monitor"]
